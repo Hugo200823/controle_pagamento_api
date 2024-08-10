@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  controle-pagamento-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"  
+    environment:
+      NODE_ENV: production
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: hugo
+      DATABASE_PASS: hugo23
+      DATABASE_NAME: hugo
+    restart: always
+
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: hugo
+      POSTGRES_PASSWORD: hugo23
+      POSTGRES_DB: hugo
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  pgdata:
+    driver: local
