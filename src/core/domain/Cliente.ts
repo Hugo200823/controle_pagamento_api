@@ -1,4 +1,5 @@
-import { Empresa } from "./Empresa"
+import { EmpresaEntity } from "../infra/entities/Empresa.entity"
+import { Empresa, EmpresaProps } from "./Empresa"
 
 export interface ClienteProps {
     cpf: string
@@ -6,7 +7,13 @@ export interface ClienteProps {
     dataVencimento: Date
     valor: number
     isPago: boolean
-    empresa: Empresa
+    empresa: EmpresaProps
+    periodo: string
+}
+
+export enum PeriodoEnum {
+    MATUTINO = 'Matutino',
+    VESPERTINO = 'Vespertino'
 }
 
 export class Cliente {
@@ -16,6 +23,7 @@ export class Cliente {
     private valor: number
     private isPago: boolean
     private empresa: Empresa
+    private periodo: string
 
 
     private constructor() {
@@ -30,9 +38,25 @@ export class Cliente {
         cliente.setDataVencimento(props.dataVencimento)
         cliente.setValor(props.valor)
         cliente.setIsPago(props.isPago)
-        cliente.setEmpresa(props.empresa)
+
+        const empresa = Empresa.Criar({
+            nome: props.empresa.nome,
+            clientes: props.empresa.clientes
+        })
+        cliente.setEmpresa(empresa)
+        cliente.setPeriodo(props.periodo)
 
         return cliente
+    }
+
+    public virarMes() {
+        const novaData = new Date(this.dataVencimento.getFullYear(), this.dataVencimento.getMonth() + 1, this.dataVencimento.getDate())
+        const currentDate = new Date()
+        if(novaData.getMonth() != currentDate.getMonth()) {
+            throw new Error(`Não é possível virar o mês para ${novaData}`)
+        }
+
+        this.dataVencimento = novaData
     }
 
     public getCpf() {
@@ -59,6 +83,10 @@ export class Cliente {
         return this.empresa
     }
 
+    public getPeriodo() {
+        return this.periodo
+    }
+
     private setCpf(cpf: string): void {
         this.cpf = cpf
     }
@@ -75,7 +103,8 @@ export class Cliente {
 
     private setValor(valor: number): void {
         if(!valor) throw new Error(`Valor é obrigatório: ${valor}`)
-        this.valor = valor
+        const valorString = valor.toString().replace(',', '.')
+        this.valor = Number(valorString.replace(/[^0-9.]/g, ''))
     }
 
     private setIsPago(isPago: boolean): void {
@@ -85,6 +114,11 @@ export class Cliente {
     private setEmpresa(empresa: Empresa): void {
         if(!empresa) throw new Error(`Empresa é obrigatório: ${empresa}`)
         this.empresa = empresa
+    }
+
+    private setPeriodo(periodo: string): void {
+        if(!periodo) throw new Error(`Período é obrigatório: ${periodo}`)
+        this.periodo = periodo
     }
 
 }

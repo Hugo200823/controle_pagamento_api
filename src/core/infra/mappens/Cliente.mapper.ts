@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Cliente } from "src/core/domain/Cliente";
 import { ClienteEntity } from "../entities/Cliente.entity";
+import { EmpresaEntity } from "../entities/Empresa.entity";
 
 @Injectable()
 export class ClienteMapper {
@@ -13,7 +14,8 @@ export class ClienteMapper {
             empresa: cliente.getEmpresa(),
             isPago: cliente.getIsPago(),
             nome: cliente.getNome(),
-            valor: cliente.getValor()
+            valor: cliente.getValor(),
+            periodo: cliente.getPeriodo()
         })
 
         return model
@@ -26,7 +28,8 @@ export class ClienteMapper {
             empresa: cliente.empresa,
             isPago: cliente.isPago,
             nome: cliente.nome,
-            valor: cliente.valor
+            valor: cliente.valor,
+            periodo: cliente.periodo
         })
         return domain
     }
